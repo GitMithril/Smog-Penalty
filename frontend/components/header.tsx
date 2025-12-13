@@ -38,7 +38,7 @@ export const Header = () => {
           {["Predictions", "Visualizations"].map((item) => (
             <Link
               className="uppercase inline-block font-mono text-foreground/60 hover:text-foreground/100 duration-150 transition-colors ease-out"
-              href={`#${item.toLowerCase()}`}
+              href={item === "Predictions" ? "/dashboard" : `#${item.toLowerCase()}`}
               key={item}
             >
               {item}

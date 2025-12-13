@@ -119,7 +119,7 @@ export function AboutUs() {
       </div>
 
       <div className="flex flex-col sm:flex-row justify-center gap-16 mt-32 pb-0 items-center">
-        <Link href="/predictions">
+        <Link href="/dashboard">
             <MagicButton>Predictions</MagicButton>
         </Link>
         <Link href="/visualizations">
