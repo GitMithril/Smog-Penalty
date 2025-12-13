@@ -34,7 +34,7 @@ const data = generateData()
 
 export function ActualVsPredictedChart() {
   return (
-    <Card className="bg-[#121212] border-white/10 p-6">
+    <Card className="bg-black/50 backdrop-blur-md border-white/10 p-6">
       <div className="mb-6">
         <h3 className="font-semibold text-lg mb-1">Actual vs Predicted AC Power</h3>
         <p className="text-sm text-[#b3b3b3]">Recent temporal performance (last 7 days)</p>

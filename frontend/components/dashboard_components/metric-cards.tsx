@@ -31,7 +31,7 @@ export function MetricCards() {
       <h2 className="text-xl font-semibold mb-4">Current System Overview</h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {cards.map((card, index) => (
-          <Card key={index} className="bg-[#121212] border-white/10 p-6">
+          <Card key={index} className="bg-black/50 backdrop-blur-md border-white/10 p-6">
             <div className="space-y-2">
               <p className="text-sm text-[#b3b3b3]">{card.label}</p>
               <div className="flex items-baseline gap-2">

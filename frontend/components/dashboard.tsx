@@ -7,6 +7,12 @@ import { PM25ImpactChart } from "@/components/dashboard_components/pm25-impact-c
 import { PredictionSimulator } from "@/components/dashboard_components/prediction-simulator"
 import { PredictionOutput } from "@/components/dashboard_components/prediction-output"
 import { useState } from "react"
+import ShaderBackground from "@/components/backgrounds/dashboard_bg"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, BarChart2 } from "lucide-react"
+
+const UI_TRANSPARENCY = "bg-black/60 backdrop-blur-md border-white/10"
 
 export default function SolarPowerDashboard() {
   const [predictedPower, setPredictedPower] = useState(450.2)
@@ -94,10 +100,29 @@ export default function SolarPowerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0b0b] text-white">
+    <div className="min-h-screen bg-transparent text-white relative overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShaderBackground color="#FFFFFF" opacity={0.5} />
+      </div>
+      
+      {/* Navigation Bar */}
+      <div className="relative z-20 flex items-center justify-between px-2 py-4 max-w-[1400px] mx-auto">
+        <Link href="/">
+          <Button variant="outline" className={`gap-2 hover:bg-white/10 ${UI_TRANSPARENCY}`}>
+            {/* <ArrowLeft className="w-4 h-4" /> */}
+            Back to Home
+          </Button>
+        </Link>
+        
+        <Button variant="outline" className={`gap-2 hover:bg-white/10 ${UI_TRANSPARENCY}`}>
+          <BarChart2 className="w-4 h-4" />
+          Visualizations
+        </Button>
+      </div>
+
       {/* Header */}
-      <header className="border-b border-white/10 bg-[#121212]">
-        <div className="mx-auto max-w-[1400px] px-6 py-8">
+      <header className="relative z-10 mx-auto max-w-[1400px] px-6 mt-2">
+        <div className={`px-6 py-8 rounded-3xl border ${UI_TRANSPARENCY}`}>
           <h1 className="font-semibold text-3xl text-balance leading-tight mb-2">
             Solar Power Prediction under Atmospheric & Pollution Effects
           </h1>
@@ -122,7 +147,7 @@ export default function SolarPowerDashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-[1400px] px-6 py-6 space-y-6">
+      <main className="relative z-10 mx-auto max-w-[1400px] px-6 py-6 space-y-6">
         <MetricCards />
 
         <PM25ImpactChart />
@@ -144,7 +169,7 @@ export default function SolarPowerDashboard() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-white/10 bg-[#121212]">
+      <footer className={`relative z-10 mt-12 border-t ${UI_TRANSPARENCY}`}>
         <div className="mx-auto max-w-[1400px] px-6 py-6">
           <p className="text-center text-sm text-[#b3b3b3]">
             This dashboard is for research and educational purposes. Predictions are based on trained machine learning

@@ -109,7 +109,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
   }
 
   return (
-    <Card className="bg-[#121212] border-white/10 p-6">
+    <Card className="bg-black/50 backdrop-blur-md border-white/10 p-6">
       <div className="mb-6 flex items-start justify-between">
         <div>
           <h3 className="font-semibold text-lg mb-1">What-If Prediction Simulator</h3>

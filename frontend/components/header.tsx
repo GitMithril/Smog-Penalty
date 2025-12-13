@@ -5,10 +5,12 @@ import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
 import { useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
+  const pathname = usePathname();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const viewportHeight = window.innerHeight;
@@ -19,6 +21,8 @@ export const Header = () => {
       setHidden(false);
     }
   });
+
+  if (pathname === "/dashboard") return null;
 
   return (
     <motion.div
