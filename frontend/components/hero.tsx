@@ -8,6 +8,14 @@ import { motion } from "framer-motion";
 
 export function Hero() {
   const [hovering, setHovering] = useState(false);
+
+  const scrollToAboutUs = () => {
+    const element = document.getElementById('about-us');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="flex flex-col h-svh justify-center relative">
       <div className="absolute inset-0">
@@ -34,7 +42,7 @@ export function Hero() {
           Some bad weather today?
         </motion.p>
 
-        <Link className="contents max-sm:hidden" href="/#contact">
+        <div className="contents max-sm:hidden">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -45,12 +53,13 @@ export function Hero() {
               className="mt-18"
               onMouseEnter={() => setHovering(true)}
               onMouseLeave={() => setHovering(false)}
+              onClick={scrollToAboutUs}
             >
               Find Out
             </Button>
           </motion.div>
-        </Link>
-        <Link className="contents sm:hidden" href="/#contact">
+        </div>
+        <div className="contents sm:hidden">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,11 +71,12 @@ export function Hero() {
               className="mt-14"
               onMouseEnter={() => setHovering(true)}
               onMouseLeave={() => setHovering(false)}
+              onClick={scrollToAboutUs}
             >
               Proceed
             </Button>
           </motion.div>
-        </Link>
+        </div>
       </div>
     </div>
   );

@@ -10,9 +10,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Skal Ventures",
-  description: "Investment strategies that outperform the market",
-    generator: 'v0.app'
+  title: "Solar Cast",
+  description: "Predict Solar Power generated based on weather and solar.",
+    // generator: 'v0.app'
 };
 
 export default function RootLayout({
