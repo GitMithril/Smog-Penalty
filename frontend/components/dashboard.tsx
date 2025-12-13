@@ -11,6 +11,7 @@ import ShaderBackground from "@/components/backgrounds/dashboard_bg"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, BarChart2 } from "lucide-react"
+import { motion } from "framer-motion"
 
 const UI_TRANSPARENCY = "bg-black/60 backdrop-blur-md border-white/10"
 
@@ -102,11 +103,16 @@ export default function SolarPowerDashboard() {
   return (
     <div className="min-h-screen bg-transparent text-white relative overflow-hidden">
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <ShaderBackground color="#FFFFFF" opacity={0.5} />
+        <ShaderBackground color="#54d5f6ff" opacity={0.6} />
       </div>
       
       {/* Navigation Bar */}
-      <div className="relative z-20 flex items-center justify-between px-2 py-4 max-w-[1400px] mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-20 flex items-center justify-between px-6 py-4 max-w-[1400px] mx-auto"
+      >
         <Link href="/">
           <Button variant="outline" className={`gap-2 hover:bg-white/10 ${UI_TRANSPARENCY}`}>
             {/* <ArrowLeft className="w-4 h-4" /> */}
@@ -118,10 +124,15 @@ export default function SolarPowerDashboard() {
           <BarChart2 className="w-4 h-4" />
           Visualizations
         </Button>
-      </div>
+      </motion.div>
 
       {/* Header */}
-      <header className="relative z-10 mx-auto max-w-[1400px] px-6 mt-2">
+      <motion.header 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+        className="relative z-10 mx-auto max-w-[1400px] px-6 mt-2"
+      >
         <div className={`px-6 py-8 rounded-3xl border ${UI_TRANSPARENCY}`}>
           <h1 className="font-semibold text-3xl text-balance leading-tight mb-2">
             Solar Power Prediction under Atmospheric & Pollution Effects
@@ -144,39 +155,73 @@ export default function SolarPowerDashboard() {
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Main Content */}
       <main className="relative z-10 mx-auto max-w-[1400px] px-6 py-6 space-y-6">
-        <MetricCards />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+        >
+          <MetricCards />
+        </motion.div>
 
-        <PM25ImpactChart />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+        >
+          <PM25ImpactChart />
+        </motion.div>
 
-        <PredictionSimulator onPredict={handlePrediction} timeSeriesData={timeSeriesData} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+        >
+          <PredictionSimulator onPredict={handlePrediction} timeSeriesData={timeSeriesData} />
+        </motion.div>
 
-        <PredictionOutput
-          predictedPower={predictedPower}
-          predictedPower2={predictedPower2}
-          powerLoss={powerLoss}
-          operationalStatus={operationalStatus}
-          isPenaltyMode={isPenaltyMode}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
+        >
+          <PredictionOutput
+            predictedPower={predictedPower}
+            predictedPower2={predictedPower2}
+            powerLoss={powerLoss}
+            operationalStatus={operationalStatus}
+            isPenaltyMode={isPenaltyMode}
+          />
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
           <FeatureImportanceChart />
           <ActualVsPredictedChart />
-        </div>
+        </motion.div>
       </main>
 
       {/* Footer */}
-      <footer className={`relative z-10 mt-12 border-t ${UI_TRANSPARENCY}`}>
+      <motion.footer 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+        className={`relative z-10 mt-12 border-t ${UI_TRANSPARENCY}`}
+      >
         <div className="mx-auto max-w-[1400px] px-6 py-6">
           <p className="text-center text-sm text-[#b3b3b3]">
             This dashboard is for research and educational purposes. Predictions are based on trained machine learning
             models and available data.
           </p>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   )
 }
