@@ -8,3 +8,6 @@ requests==2.31.0
 lightgbm
 joblib
 pandas
+pvlib
+openaq
+

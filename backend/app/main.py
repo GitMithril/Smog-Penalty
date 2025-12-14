@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes.demo import router as demo_router
 from app.routes.predict import router as predict_router
+from app.routes.readings import router as readings_router
 
 app = FastAPI(
     title="ML Project API",
@@ -21,6 +22,8 @@ app.add_middleware(
 # Include routers
 app.include_router(demo_router)
 app.include_router(predict_router)
+app.include_router(readings_router)
+
 
 
 

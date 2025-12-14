@@ -6,7 +6,7 @@ import { ActualVsPredictedChart } from "@/components/dashboard_components/actual
 import { PM25ImpactChart } from "@/components/dashboard_components/pm25-impact-chart"
 import { PredictionSimulator } from "@/components/dashboard_components/prediction-simulator"
 import { PredictionOutput } from "@/components/dashboard_components/prediction-output"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import ShaderBackground from "@/components/backgrounds/dashboard_bg"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -26,6 +26,81 @@ export default function SolarPowerDashboard() {
   const [timeSeriesData, setTimeSeriesData] = useState<Array<{ time: string; power: number }>>([])
   const [isPenaltyMode, setIsPenaltyMode] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Readings State
+  const [sza, setSza] = useState<number | null>(null)
+  const [pm25, setPm25] = useState<number | null>(null)
+  const [isLoadingSza, setIsLoadingSza] = useState(false)
+  const [isLoadingPm25, setIsLoadingPm25] = useState(false)
+  const [location, setLocation] = useState<{lat: number, lon: number} | null>(null)
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const loc = {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          }
+          setLocation(loc)
+          fetchSza(loc.lat, loc.lon)
+          fetchPm25(loc.lat, loc.lon)
+        },
+        (error) => {
+          console.error("Error getting location:", error)
+          toast({
+            title: "Location Error",
+            description: "Could not get your location. Using defaults.",
+            variant: "destructive",
+          })
+        }
+      )
+    }
+  }, [])
+
+  const fetchSza = async (lat: number, lon: number) => {
+    setIsLoadingSza(true)
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/readings/sza?lat=${lat}&lon=${lon}`)
+      if (!response.ok) throw new Error("Failed to fetch SZA")
+      const data = await response.json()
+      setSza(data.sza)
+    } catch (error) {
+      console.error(error)
+      toast({ title: "Error", description: "Failed to fetch SZA", variant: "destructive" })
+    } finally {
+      setIsLoadingSza(false)
+    }
+  }
+
+  const fetchPm25 = async (lat: number, lon: number) => {
+    setIsLoadingPm25(true)
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/readings/pm25?lat=${lat}&lon=${lon}`)
+      if (!response.ok) throw new Error("Failed to fetch PM2.5")
+      const data = await response.json()
+      if (data.pm25 !== null) {
+          setPm25(data.pm25)
+      } else {
+          toast({ title: "Info", description: data.message || "No PM2.5 data found", variant: "default" })
+      }
+    } catch (error) {
+      console.error(error)
+      toast({ title: "Error", description: "Failed to fetch PM2.5", variant: "destructive" })
+    } finally {
+      setIsLoadingPm25(false)
+    }
+  }
+
+  const handleReloadSza = () => {
+    if (location) fetchSza(location.lat, location.lon)
+    else toast({ title: "Error", description: "Location not available", variant: "destructive" })
+  }
+
+  const handleReloadPm25 = () => {
+    if (location) fetchPm25(location.lat, location.lon)
+    else toast({ title: "Error", description: "Location not available", variant: "destructive" })
+  }
 
   const handlePrediction = async (
     values: {
@@ -206,7 +281,14 @@ export default function SolarPowerDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
         >
-          <MetricCards />
+          <MetricCards 
+            sza={sza} 
+            pm25={pm25} 
+            onReloadSza={handleReloadSza} 
+            onReloadPm25={handleReloadPm25}
+            isLoadingSza={isLoadingSza}
+            isLoadingPm25={isLoadingPm25}
+          />
         </motion.div>
 
         <motion.div
