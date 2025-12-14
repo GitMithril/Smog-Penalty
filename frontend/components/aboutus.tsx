@@ -10,19 +10,19 @@ const features = [
   { 
     step: 'Step 1', 
     title: 'Data Acquisition',
-    content: 'We gather real-time atmospheric data including aerosol optical depth, ozone levels, and cloud cover from satellite and ground sensors.', 
+    content: 'We collect historical and real-time data from environmental sensors and solar panels, using NASA POWER for solar data, OpenAQ for air quality, and PVDAQ for solar panel performance.', 
     image: 'https://images.unsplash.com/photo-1592210454359-9043f067919b?q=80&w=2070&auto=format&fit=crop' 
   },
   { 
     step: 'Step 2',
-    title: 'AI Analysis',
-    content: 'Our advanced machine learning models process the environmental data to detect smog patterns and predict their impact on solar irradiance.',
+    title: 'Model Training & Usage',
+    content: 'We train tuned regression models using LightGBM and a linear baseline to predict solar power output based on smog levels and seasonal atmospheric conditions.',
     image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1965&auto=format&fit=crop'
   },
   { 
     step: 'Step 3',
-    title: 'Power Prediction',
-    content: 'Receive accurate forecasts of solar power output, allowing for optimized grid management and energy planning.',
+    title: 'Power Prediction Dashboard',
+    content: 'Our dashboard provides real-time predictions and visualizations, empowering users to make informed decisions about solar energy utilization.',
     image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=2072&auto=format&fit=crop'
   },
 ]

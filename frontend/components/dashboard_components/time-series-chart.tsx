@@ -29,7 +29,7 @@ export function TimeSeriesChart({ data }: TimeSeriesChartProps) {
               <YAxis
                 stroke="#b3b3b3"
                 style={{ fontSize: "12px" }}
-                label={{ value: "Power (kW)", angle: -90, position: "insideLeft", fill: "#b3b3b3" }}
+                label={{ value: "Power Per Unit Area (W/m2)", angle: -90, position: "insideLeft", fill: "#b3b3b3" }}
               />
               <Tooltip
                 contentStyle={{

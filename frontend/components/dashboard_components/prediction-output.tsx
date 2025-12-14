@@ -32,7 +32,7 @@ export function PredictionOutput({
 
   const totalPower = area > 0 ? predictedPower * area / 1000 : null
   const totalPower2 = area > 0 && predictedPower2 ? predictedPower2 * area / 1000 : null
-  const powerDifference = isPenaltyMode && predictedPower2 ? Math.abs(predictedPower - predictedPower2) : null
+  const powerDifference = isPenaltyMode && predictedPower2 ? Math.abs(predictedPower - predictedPower2)/1000 : null
 
   return (
     <Card className="bg-black/50 backdrop-blur-md border-white/10 p-6">
@@ -116,7 +116,7 @@ export function PredictionOutput({
                         <span className="font-bold text-2xl" style={{ color: "#3b82f6" }}>
                           {totalPower.toFixed(2)}
                         </span>
-                        <span className="text-base text-[#b3b3b3]">W</span>
+                        <span className="text-base text-[#b3b3b3]">kWh</span>
                       </div>
                     </div>
 
@@ -126,7 +126,7 @@ export function PredictionOutput({
                         <span className="font-bold text-2xl" style={{ color: "#ef4444" }}>
                           {totalPower2.toFixed(2)}
                         </span>
-                        <span className="text-base text-[#b3b3b3]">W</span>
+                        <span className="text-base text-[#b3b3b3]">kWh</span>
                       </div>
                     </div>
 
@@ -137,7 +137,7 @@ export function PredictionOutput({
                           <span className="font-bold text-2xl" style={{ color: "#eab308" }}>
                             {(powerDifference * area).toFixed(2)}
                           </span>
-                          <span className="text-base text-[#b3b3b3]">W</span>
+                          <span className="text-base text-[#b3b3b3]">kWh</span>
                         </div>
                       </div>
                     )}
