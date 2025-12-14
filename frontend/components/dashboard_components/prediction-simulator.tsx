@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { useState, useRef } from "react"
 import { LocationSelector } from "./location-selector"
 import { TimeSeriesChart } from "./time-series-chart"
-import { Upload, CalendarIcon } from "lucide-react"
+import { Upload, CalendarIcon, X, FileText } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
@@ -68,11 +68,19 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
   const [month, setMonth] = useState(6)
   const [surfaceIrradiance, setSurfaceIrradiance] = useState(800)
 
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [isBatchLoading, setIsBatchLoading] = useState(false)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handlePredict = () => {
-    console.log("Run Prediction clicked", { isLocationMode, isPenaltyMode })
+    console.log("Run Prediction clicked", { isLocationMode, isPenaltyMode, uploadedFile })
     
+    if (uploadedFile) {
+      handleBatchPrediction()
+      return
+    }
+
     if (isLocationMode) {
       if (latitude === null || longitude === null) {
         toast({
@@ -104,6 +112,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
           pm25,
           pm25_2: isPenaltyMode ? pm25_2 : undefined,
           pm25LastHour,
+          powerLastHour,
           allskyKt,
           sza,
           t2m,
@@ -125,13 +134,63 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
+    setUploadedFile(file)
+    toast({
+      title: "File Uploaded",
+      description: `Ready to process ${file.name}`,
+    })
+  }
 
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const text = e.target?.result as string
-      console.log("[v0] CSV uploaded:", text.slice(0, 200))
+  const handleRemoveFile = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setUploadedFile(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
     }
-    reader.readAsText(file)
+  }
+
+  const handleBatchPrediction = async () => {
+    if (!uploadedFile) return
+
+    setIsBatchLoading(true)
+    const formData = new FormData()
+    formData.append("file", uploadedFile)
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/predict/batch", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Batch prediction failed: ${errorText}`)
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `predictions_${uploadedFile.name}`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+
+      toast({
+        title: "Batch Prediction Complete",
+        description: "Predictions downloaded successfully.",
+      })
+    } catch (error) {
+      console.error("Batch prediction error:", error)
+      toast({
+        title: "Prediction Failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      })
+    } finally {
+      setIsBatchLoading(false)
+    }
   }
 
   const handleLocationSelect = (lat: number, lon: number) => {
@@ -211,12 +270,34 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
       <div className="mb-6">
         <Label className="text-[#b3b3b3] mb-2 block">Upload CSV Data (Optional)</Label>
         <div
-          onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center cursor-pointer hover:border-[#3b82f6] transition-colors"
+          onClick={() => !uploadedFile && fileInputRef.current?.click()}
+          className={cn(
+            "border-2 border-dashed rounded-lg p-6 text-center transition-colors relative",
+            uploadedFile 
+              ? "border-[#22c55e] bg-[#22c55e]/10 cursor-default" 
+              : "border-white/20 cursor-pointer hover:border-[#3b82f6]"
+          )}
         >
-          <Upload className="mx-auto h-8 w-8 text-[#b3b3b3] mb-2" />
-          <p className="text-sm text-[#b3b3b3]">Click to upload or drag and drop</p>
-          <p className="text-xs text-[#666] mt-1">CSV file with time series data</p>
+          {uploadedFile ? (
+            <div className="flex flex-col items-center justify-center">
+              <FileText className="mx-auto h-8 w-8 text-[#22c55e] mb-2" />
+              <p className="text-sm text-white font-medium">{uploadedFile.name}</p>
+              <p className="text-xs text-[#b3b3b3] mt-1">{(uploadedFile.size / 1024).toFixed(2)} KB</p>
+              <Button
+                variant="ghost"
+                className="absolute top-2 right-2 text-white/70 hover:text-white hover:bg-white/10"
+                onClick={handleRemoveFile}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Upload className="mx-auto h-8 w-8 text-[#b3b3b3] mb-2" />
+              <p className="text-sm text-[#b3b3b3]">Click to upload or drag and drop</p>
+              <p className="text-xs text-[#666] mt-1">CSV file with time series data</p>
+            </>
+          )}
           <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileUpload} className="hidden" />
         </div>
       </div>
@@ -607,6 +688,35 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center gap-4">
+                    <Label htmlFor="power-last-manual" className="text-[#b3b3b3]">
+                      Power Generated (Last Hour)
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={powerLastHour}
+                        onChange={(e) => setPowerLastHour(Number(e.target.value))}
+                        className="w-20 h-8 bg-[#1a1a1a] border-white/20 text-white text-sm text-right"
+                        step="0.1"
+                        min="0"
+                        max="800"
+                      />
+                      <span className="text-sm text-[#b3b3b3]">W/m²</span>
+                    </div>
+                  </div>
+                  <Slider
+                    id="power-last-manual"
+                    min={0}
+                    max={50}
+                    step={0.1}
+                    value={[powerLastHour]}
+                    onValueChange={(value) => setPowerLastHour(value[0])}
+                    className="[&_[role=slider]]:bg-[#22c55e] [&_[role=slider]]:border-[#22c55e] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center gap-4">
                     <Label htmlFor="allsky" className="text-[#b3b3b3]">
                       All-Sky Clearness Index (Kt)
                     </Label>
@@ -867,10 +977,10 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
 
       <Button 
         onClick={handlePredict} 
-        disabled={isLoading}
+        disabled={isLoading || isBatchLoading}
         className="w-full mt-6 bg-[#3b82f6] hover:bg-[#2563eb] text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? "Running Prediction..." : "Run Prediction"}
+        {isBatchLoading ? "Processing CSV..." : isLoading ? "Running Prediction..." : uploadedFile ? "Run Batch Prediction" : "Run Prediction"}
       </Button>
 
       <TimeSeriesChart data={timeSeriesData} />
