@@ -92,6 +92,7 @@ npm run dev
 
 
 # Run the Project
+
 ## Setup Guide for New PC
 
 Follow these steps to set up the project from scratch on a new machine.
