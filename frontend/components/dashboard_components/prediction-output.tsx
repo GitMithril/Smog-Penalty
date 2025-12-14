@@ -20,7 +20,7 @@ export function PredictionOutput({
   operationalStatus,
   isPenaltyMode = false,
 }: PredictionOutputProps) {
-  const [area, setArea] = useState<number>(0)
+  const [area, setArea] = useState<number>(0.0)
 
   const statusConfig = {
     optimal: { color: "#22c55e", label: "Optimal" },
@@ -30,8 +30,8 @@ export function PredictionOutput({
 
   const status = statusConfig[operationalStatus]
 
-  const totalPower = area > 0 ? predictedPower * area : null
-  const totalPower2 = area > 0 && predictedPower2 ? predictedPower2 * area : null
+  const totalPower = area > 0 ? predictedPower * area / 1000 : null
+  const totalPower2 = area > 0 && predictedPower2 ? predictedPower2 * area / 1000 : null
   const powerDifference = isPenaltyMode && predictedPower2 ? Math.abs(predictedPower - predictedPower2) : null
 
   return (
@@ -149,7 +149,7 @@ export function PredictionOutput({
                       <span className="font-bold text-3xl" style={{ color: "#22c55e" }}>
                         {totalPower.toFixed(2)}
                       </span>
-                      <span className="text-lg text-[#b3b3b3]">W</span>
+                      <span className="text-lg text-[#b3b3b3]">KW</span>
                     </div>
                     <p className="text-xs text-[#666] mt-2">
                       = {predictedPower.toFixed(1)} W/m² × {area} m²

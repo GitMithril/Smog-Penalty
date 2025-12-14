@@ -19,9 +19,9 @@ const UI_TRANSPARENCY = "bg-black/60 backdrop-blur-md border-white/10"
 
 export default function SolarPowerDashboard() {
   const { toast } = useToast()
-  const [predictedPower, setPredictedPower] = useState(450.2)
+  const [predictedPower, setPredictedPower] = useState(0.0)
   const [predictedPower2, setPredictedPower2] = useState<number | undefined>(undefined)
-  const [powerLoss, setPowerLoss] = useState(15.3)
+  const [powerLoss, setPowerLoss] = useState(0.0)
   const [operationalStatus, setOperationalStatus] = useState<"optimal" | "degraded" | "severe">("optimal")
   const [timeSeriesData, setTimeSeriesData] = useState<Array<{ time: string; power: number }>>([])
   const [isPenaltyMode, setIsPenaltyMode] = useState(false)

@@ -6,8 +6,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 // Generate data showing exponential decay of power with PM2.5
 const generateData = () => {
   const data = []
-  for (let pm25 = 0; pm25 <= 150; pm25 += 5) {
-    const power = 700 * Math.exp(-pm25 / 100)
+  for (let pm25 = 0; pm25 <= 110; pm25 += 5) {
+    const power = 50 * Math.exp(-pm25 / 60)
     data.push({
       pm25,
       power: Number.parseFloat(power.toFixed(1)),
