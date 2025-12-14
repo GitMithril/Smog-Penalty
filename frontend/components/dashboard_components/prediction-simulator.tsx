@@ -292,7 +292,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={1}
                     value={[hour]}
                     onValueChange={(value) => setHour(value[0])}
-                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6]"
+                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
               </div>
@@ -328,7 +328,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                         step={0.1}
                         value={[pm25]}
                         onValueChange={(value) => setPm25(value[0])}
-                        className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                        className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                       />
                     </div>
 
@@ -357,7 +357,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                         step={0.1}
                         value={[pm25_2]}
                         onValueChange={(value) => setPm25_2(value[0])}
-                        className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444]"
+                        className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                       />
                     </div>
                   </div>
@@ -387,7 +387,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                       step={0.1}
                       value={[pm25]}
                       onValueChange={(value) => setPm25(value[0])}
-                      className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                      className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                     />
                   </div>
                 )}
@@ -417,7 +417,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.1}
                     value={[pm25LastHour]}
                     onValueChange={(value) => setPm25LastHour(value[0])}
-                    className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                    className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -446,7 +446,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.1}
                     value={[powerLastHour]}
                     onValueChange={(value) => setPowerLastHour(value[0])}
-                    className="[&_[role=slider]]:bg-[#22c55e] [&_[role=slider]]:border-[#22c55e]"
+                    className="[&_[role=slider]]:bg-[#22c55e] [&_[role=slider]]:border-[#22c55e] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -474,7 +474,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.01}
                     value={[powerFactorLastHour]}
                     onValueChange={(value) => setPowerFactorLastHour(value[0])}
-                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6]"
+                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
               </div>
@@ -512,7 +512,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                         step={0.1}
                         value={[pm25]}
                         onValueChange={(value) => setPm25(value[0])}
-                        className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                        className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                       />
                     </div>
 
@@ -541,7 +541,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                         step={0.1}
                         value={[pm25_2]}
                         onValueChange={(value) => setPm25_2(value[0])}
-                        className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444]"
+                        className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                       />
                     </div>
                   </div>
@@ -571,7 +571,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                       step={0.1}
                       value={[pm25]}
                       onValueChange={(value) => setPm25(value[0])}
-                      className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                      className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                     />
                   </div>
                 )}
@@ -601,7 +601,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.1}
                     value={[pm25LastHour]}
                     onValueChange={(value) => setPm25LastHour(value[0])}
-                    className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                    className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -629,7 +629,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.01}
                     value={[allskyKt]}
                     onValueChange={(value) => setAllskyKt(value[0])}
-                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6]"
+                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -658,7 +658,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.1}
                     value={[sza]}
                     onValueChange={(value) => setSza(value[0])}
-                    className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                    className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -687,7 +687,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.1}
                     value={[t2m]}
                     onValueChange={(value) => setT2m(value[0])}
-                    className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444]"
+                    className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -716,7 +716,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.1}
                     value={[t2mLastHour]}
                     onValueChange={(value) => setT2mLastHour(value[0])}
-                    className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444]"
+                    className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -745,7 +745,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.1}
                     value={[ws10m]}
                     onValueChange={(value) => setWs10m(value[0])}
-                    className="[&_[role=slider]]:bg-[#22c55e] [&_[role=slider]]:border-[#22c55e]"
+                    className="[&_[role=slider]]:bg-[#22c55e] [&_[role=slider]]:border-[#22c55e] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -773,7 +773,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={0.01}
                     value={[powerFactorLastHour]}
                     onValueChange={(value) => setPowerFactorLastHour(value[0])}
-                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6]"
+                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
 
@@ -802,7 +802,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = fal
                     step={1}
                     value={[surfaceIrradiance]}
                     onValueChange={(value) => setSurfaceIrradiance(value[0])}
-                    className="[&_[role=slider]]:bg-[#eab308] [&_[role=slider]]:border-[#eab308]"
+                    className="[&_[role=slider]]:bg-[#a6a6a6] [&_[role=slider]]:border-[#a6a6a6] [&_[data-slot=slider-range]]:bg-[#a6a6a6]"
                   />
                 </div>
               </div>
