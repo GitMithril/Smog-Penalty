@@ -42,12 +42,6 @@ env/
 .env.local
 .env.*.local
 
-# ML Models
-*.pkl
-*.h5
-*.model
-*.joblib
-
 # Data files (uncomment if needed)
 # data/*.csv
 # data/*.json
