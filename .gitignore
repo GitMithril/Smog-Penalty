@@ -84,3 +84,6 @@ htmlcov/
 # Mist
 RunProject.txt
 instructions.md
+models/hunain_models
+notebooks/*.ipynb
+notebooks/catboost_info

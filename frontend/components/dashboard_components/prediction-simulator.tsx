@@ -11,7 +11,13 @@ import { Input } from "@/components/ui/input"
 import { useState, useRef } from "react"
 import { LocationSelector } from "./location-selector"
 import { TimeSeriesChart } from "./time-series-chart"
-import { Upload } from "lucide-react"
+import { Upload, CalendarIcon } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+
+import { useToast } from "@/hooks/use-toast"
 
 interface PredictionSimulatorProps {
   onPredict: (
@@ -24,22 +30,28 @@ interface PredictionSimulatorProps {
       allskyKt?: number
       sza?: number
       t2m?: number
+      t2mLastHour?: number
       ws10m?: number
       hour?: number
       month?: number
       surfaceIrradiance?: number
+      latitude?: number | null
+      longitude?: number | null
     },
     isLocationMode: boolean,
     isPenaltyMode: boolean,
   ) => void
   timeSeriesData: Array<{ time: string; power: number }>
+  isLoading?: boolean
 }
 
-export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSimulatorProps) {
+export function PredictionSimulator({ onPredict, timeSeriesData, isLoading = false }: PredictionSimulatorProps) {
+  const { toast } = useToast()
   const [isLocationMode, setIsLocationMode] = useState(false)
   const [isPenaltyMode, setIsPenaltyMode] = useState(false)
   const [latitude, setLatitude] = useState<number | null>(null)
   const [longitude, setLongitude] = useState<number | null>(null)
+  const [date, setDate] = useState<Date | undefined>(new Date(2025, 5, 15)) // June 15, 2025
 
   const [pm25, setPm25] = useState(42.7)
   const [pm25_2, setPm25_2] = useState(60.0)
@@ -50,6 +62,7 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
   const [allskyKt, setAllskyKt] = useState(0.65)
   const [sza, setSza] = useState(32.4)
   const [t2m, setT2m] = useState(25)
+  const [t2mLastHour, setT2mLastHour] = useState(24.0)
   const [ws10m, setWs10m] = useState(3.5)
   const [hour, setHour] = useState(12)
   const [month, setMonth] = useState(6)
@@ -58,7 +71,18 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handlePredict = () => {
+    console.log("Run Prediction clicked", { isLocationMode, isPenaltyMode })
+    
     if (isLocationMode) {
+      if (latitude === null || longitude === null) {
+        toast({
+          title: "Location required",
+          description: "Please select a location on the map or enter coordinates.",
+          variant: "destructive",
+        })
+        return
+      }
+
       onPredict(
         {
           pm25,
@@ -66,6 +90,10 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
           pm25LastHour,
           powerLastHour,
           powerFactorLastHour,
+          hour,
+          month,
+          latitude,
+          longitude,
         },
         true,
         isPenaltyMode,
@@ -79,11 +107,14 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
           allskyKt,
           sza,
           t2m,
+          t2mLastHour,
           ws10m,
           hour,
           month,
           surfaceIrradiance,
           powerFactorLastHour,
+          latitude,
+          longitude,
         },
         false,
         isPenaltyMode,
@@ -194,6 +225,78 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
         {isLocationMode ? (
           <>
             <LocationSelector onLocationSelect={handleLocationSelect} latitude={latitude} longitude={longitude} />
+
+            <div>
+              <h4 className="font-medium text-sm mb-4 text-white">Temporal Context</h4>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label className="text-[#b3b3b3]">Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-[#1a1a1a] border-white/20 text-white hover:bg-[#2a2a2a] hover:text-white",
+                          !date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-[#1a1a1a] border-white/20 text-white">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={(newDate) => {
+                          if (newDate) {
+                            setDate(newDate)
+                            setMonth(newDate.getMonth() + 1)
+                          }
+                        }}
+                        initialFocus
+                        disabled={(date) =>
+                          date > new Date(2025, 10, 23) || date < new Date(2020, 0, 1)
+                        }
+                        className="bg-[#1a1a1a] text-white"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center gap-4">
+                    <Label htmlFor="hour-loc" className="text-[#b3b3b3]">
+                      Hour of Day
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={hour}
+                        onChange={(e) => {
+                          const val = Number(e.target.value)
+                          if (val >= 8 && val <= 16) setHour(val)
+                        }}
+                        className="w-20 h-8 bg-[#1a1a1a] border-white/20 text-white text-sm text-right"
+                        step="1"
+                        min="8"
+                        max="16"
+                      />
+                      <span className="text-sm text-[#b3b3b3]">:00</span>
+                    </div>
+                  </div>
+                  <Slider
+                    id="hour-loc"
+                    min={8}
+                    max={16}
+                    step={1}
+                    value={[hour]}
+                    onValueChange={(value) => setHour(value[0])}
+                    className="[&_[role=slider]]:bg-[#3b82f6] [&_[role=slider]]:border-[#3b82f6]"
+                  />
+                </div>
+              </div>
+            </div>
 
             <div>
               <h4 className="font-medium text-sm mb-4 text-white">Sensor Data</h4>
@@ -590,6 +693,35 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center gap-4">
+                    <Label htmlFor="t2m-last" className="text-[#b3b3b3]">
+                      Temperature at 2m (Last Hour)
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={t2mLastHour}
+                        onChange={(e) => setT2mLastHour(Number(e.target.value))}
+                        className="w-20 h-8 bg-[#1a1a1a] border-white/20 text-white text-sm text-right"
+                        step="0.1"
+                        min="-20"
+                        max="50"
+                      />
+                      <span className="text-sm text-[#b3b3b3]">°C</span>
+                    </div>
+                  </div>
+                  <Slider
+                    id="t2m-last"
+                    min={-20}
+                    max={50}
+                    step={0.1}
+                    value={[t2mLastHour]}
+                    onValueChange={(value) => setT2mLastHour(value[0])}
+                    className="[&_[role=slider]]:bg-[#ef4444] [&_[role=slider]]:border-[#ef4444]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center gap-4">
                     <Label htmlFor="ws10m" className="text-[#b3b3b3]">
                       Wind Speed at 10m
                     </Label>
@@ -733,8 +865,12 @@ export function PredictionSimulator({ onPredict, timeSeriesData }: PredictionSim
         )}
       </div>
 
-      <Button onClick={handlePredict} className="w-full mt-6 bg-[#3b82f6] hover:bg-[#2563eb] text-white">
-        Run Prediction
+      <Button 
+        onClick={handlePredict} 
+        disabled={isLoading}
+        className="w-full mt-6 bg-[#3b82f6] hover:bg-[#2563eb] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isLoading ? "Running Prediction..." : "Run Prediction"}
       </Button>
 
       <TimeSeriesChart data={timeSeriesData} />

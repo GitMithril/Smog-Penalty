@@ -13,17 +13,21 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, BarChart2 } from "lucide-react"
 import { motion } from "framer-motion"
 
+import { useToast } from "@/hooks/use-toast"
+
 const UI_TRANSPARENCY = "bg-black/60 backdrop-blur-md border-white/10"
 
 export default function SolarPowerDashboard() {
+  const { toast } = useToast()
   const [predictedPower, setPredictedPower] = useState(450.2)
   const [predictedPower2, setPredictedPower2] = useState<number | undefined>(undefined)
   const [powerLoss, setPowerLoss] = useState(15.3)
   const [operationalStatus, setOperationalStatus] = useState<"optimal" | "degraded" | "severe">("optimal")
   const [timeSeriesData, setTimeSeriesData] = useState<Array<{ time: string; power: number }>>([])
   const [isPenaltyMode, setIsPenaltyMode] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handlePrediction = (
+  const handlePrediction = async (
     values: {
       pm25: number
       pm25_2?: number
@@ -33,77 +37,115 @@ export default function SolarPowerDashboard() {
       allskyKt?: number
       sza?: number
       t2m?: number
+      t2mLastHour?: number
       ws10m?: number
       hour?: number
       month?: number
       surfaceIrradiance?: number
+      latitude?: number | null
+      longitude?: number | null
     },
     isLocationMode: boolean,
     isPenalty: boolean,
   ) => {
+    console.log("handlePrediction called", { values, isLocationMode, isPenalty })
     setIsPenaltyMode(isPenalty)
+    setIsLoading(true)
 
-    const calculatePower = (pm25Value: number) => {
-      let calculatedPower: number
+    const fetchPrediction = async (pm25Value: number) => {
+      try {
+        const payload = {
+          is_location_mode: isLocationMode,
+          latitude: values.latitude,
+          longitude: values.longitude,
+          hour: values.hour || 12,
+          month: values.month || 6,
+          allsky_sfc_sw_dwn: values.surfaceIrradiance,
+          allsky_kt: values.allskyKt,
+          t2m: values.t2m,
+          t2m_lag1: values.t2mLastHour || values.t2m,
+          sza: values.sza,
+          ws10m: values.ws10m,
+          pm25: pm25Value,
+          pm25_lag1: values.pm25LastHour || 0,
+          ac_power_lag1: values.powerLastHour || 0,
+          power_factor_lag1: values.powerFactorLastHour || 0.95
+        }
 
-      if (isLocationMode) {
-        const pm25Impact = Math.exp(-pm25Value / 100)
-        const basePower = 800
-        calculatedPower = basePower * pm25Impact
+        const response = await fetch('http://127.0.0.1:8000/api/predict', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error('Prediction failed:', response.status, errorText)
+          throw new Error(`Backend error: ${response.status} ${errorText}`)
+        }
+
+        const data = await response.json()
+        return data.predicted_power
+      } catch (error) {
+        console.error('Error connecting to backend:', error)
+        throw error
+      }
+    }
+
+    try {
+      const power1 = await fetchPrediction(values.pm25)
+      setPredictedPower(power1)
+
+      if (isPenalty && values.pm25_2 !== undefined) {
+        const power2 = await fetchPrediction(values.pm25_2)
+        setPredictedPower2(power2)
       } else {
-        const szaFactor = Math.cos(((values.sza || 32.4) * Math.PI) / 180)
-        const ktFactor = values.allskyKt || 0.65
-        const pm25Impact = Math.exp(-pm25Value / 100)
-        const tempFactor = 1 - Math.abs((values.t2m || 25) - 25) / 100
-        const hourFactor = (values.hour || 12) >= 8 && (values.hour || 12) <= 16 ? 1 : 0.5
-        const irradianceFactor = (values.surfaceIrradiance || 800) / 800
-        const powerFactorImpact = values.powerFactorLastHour || 0.95
-
-        const basePower = 800
-        calculatedPower =
-          basePower * szaFactor * ktFactor * pm25Impact * tempFactor * hourFactor * irradianceFactor * powerFactorImpact
+        setPredictedPower2(undefined)
       }
 
-      return Math.max(0, Math.min(800, calculatedPower))
+      const basePower = 800
+      const lossPercent = ((basePower - power1) / basePower) * 100
+
+      let status: "optimal" | "degraded" | "severe" = "optimal"
+      if (lossPercent > 50) status = "severe"
+      else if (lossPercent > 25) status = "degraded"
+
+      setPowerLoss(lossPercent)
+      setOperationalStatus(status)
+
+      // Generate time series data (24 hours)
+      const newTimeSeriesData = Array.from({ length: 24 }, (_, i) => {
+        const hourFactor = i >= 6 && i <= 18 ? Math.sin(((i - 6) / 12) * Math.PI) : 0
+        const noise = Math.random() * 0.1 - 0.05
+        const power = power1 * hourFactor * (1 + noise)
+        return {
+          time: `${i}:00`,
+          power: Math.max(0, power),
+        }
+      })
+      setTimeSeriesData(newTimeSeriesData)
+      
+      toast({
+        title: "Prediction Successful",
+        description: "Solar power output has been estimated.",
+      })
+    } catch (error) {
+      toast({
+        title: "Prediction Failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
-
-    const power1 = calculatePower(values.pm25)
-    setPredictedPower(power1)
-
-    if (isPenalty && values.pm25_2 !== undefined) {
-      const power2 = calculatePower(values.pm25_2)
-      setPredictedPower2(power2)
-    } else {
-      setPredictedPower2(undefined)
-    }
-
-    const basePower = 800
-    const lossPercent = ((basePower - power1) / basePower) * 100
-
-    let status: "optimal" | "degraded" | "severe" = "optimal"
-    if (lossPercent > 50) status = "severe"
-    else if (lossPercent > 25) status = "degraded"
-
-    setPowerLoss(lossPercent)
-    setOperationalStatus(status)
-
-    // Generate time series data (24 hours)
-    const newTimeSeriesData = Array.from({ length: 24 }, (_, i) => {
-      const hourFactor = i >= 6 && i <= 18 ? Math.sin(((i - 6) / 12) * Math.PI) : 0
-      const noise = Math.random() * 0.1 - 0.05
-      const power = power1 * hourFactor * (1 + noise)
-      return {
-        time: `${i}:00`,
-        power: Math.max(0, power),
-      }
-    })
-    setTimeSeriesData(newTimeSeriesData)
   }
 
   return (
     <div className="min-h-screen bg-transparent text-white relative overflow-hidden">
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <ShaderBackground color="#54d5f6ff" opacity={0.6} />
+        <ShaderBackground color="#00a7d1ff" opacity={0.6} />
       </div>
       
       {/* Navigation Bar */}
@@ -180,7 +222,7 @@ export default function SolarPowerDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
         >
-          <PredictionSimulator onPredict={handlePrediction} timeSeriesData={timeSeriesData} />
+          <PredictionSimulator onPredict={handlePrediction} timeSeriesData={timeSeriesData} isLoading={isLoading} />
         </motion.div>
 
         <motion.div
